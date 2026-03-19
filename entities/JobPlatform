@@ -1,0 +1,77 @@
+{
+  "name": "JobPlatform",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the job platform"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Official website URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the platform"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "tech",
+        "freelance",
+        "government",
+        "startup",
+        "executive",
+        "healthcare",
+        "finance",
+        "education",
+        "remote"
+      ],
+      "description": "Primary category of the platform"
+    },
+    "specialization": {
+      "type": "string",
+      "description": "What the platform specializes in"
+    },
+    "founded_year": {
+      "type": "number",
+      "description": "Year the platform was founded"
+    },
+    "headquarters": {
+      "type": "string",
+      "description": "City where the platform is headquartered"
+    },
+    "key_features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Key features and services offered"
+    },
+    "target_audience": {
+      "type": "string",
+      "description": "Primary target audience"
+    },
+    "app_available": {
+      "type": "boolean",
+      "description": "Whether mobile app is available"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "URL to platform logo"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "User rating out of 5"
+    }
+  },
+  "required": [
+    "name",
+    "website_url",
+    "description",
+    "category"
+  ]
+}

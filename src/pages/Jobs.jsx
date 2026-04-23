@@ -13,32 +13,16 @@ export default function JobsPage() {
   const jobsPerPage = 10;
 
   useEffect(() => {
-    const titles = [
-      "Frontend Developer",
-      "Backend Developer",
-      "Full Stack Developer",
-      "Data Analyst",
-      "Product Designer",
-      "Mobile Engineer",
-    ];
-    const companies = ["Google", "Amazon", "Microsoft", "TCS", "Infosys", "Swiggy", "Flipkart"];
-    const locations = ["Remote", "Mumbai", "Bangalore", "Pune", "Delhi", "Hyderabad"];
-    const experiences = ["Entry", "Mid", "Senior"];
-    const types = ["Full-time", "Part-time", "Internship"];
-    const salaries = ["5 LPA", "8 LPA", "12 LPA", "15 LPA", "20 LPA"];
-
-    const jobData = Array.from({ length: 180 }, (_, i) => ({
-      id: i + 1,
-      title: titles[i % titles.length],
-      company: companies[i % companies.length],
-      location: locations[i % locations.length],
-      experience_level: experiences[i % experiences.length],
-      job_type: types[i % types.length],
-      salary: salaries[i % salaries.length],
-    }));
-
-    setJobs(jobData);
-    setLoading(false);
+    fetch('http://localhost:5000/api/jobs')
+      .then(res => res.json())
+      .then(data => {
+        setJobs(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching jobs:', err);
+        setLoading(false);
+      });
   }, []);
 
   const filteredJobs = useMemo(() => {
@@ -51,6 +35,15 @@ export default function JobsPage() {
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
   const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+
+  const handleApply = (job) => {
+    const applied = JSON.parse(window.localStorage.getItem("appliedJobs") || "[]");
+    if (!applied.includes(job.id)) {
+      applied.push(job.id);
+      window.localStorage.setItem("appliedJobs", JSON.stringify(applied));
+    }
+    window.open(job.apply_url, '_blank');
+  };
 
   if (loading) {
     return <h2 className="mt-10 text-center text-sm text-muted-foreground">Loading jobs…</h2>;
@@ -112,12 +105,15 @@ export default function JobsPage() {
                 <p className="text-sm font-semibold text-emerald-600">{job.salary}</p>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-2 text-xs">
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
                 <span className="rounded-full bg-muted px-3 py-1">
                   💼 {job.experience_level}
                 </span>
                 <span className="rounded-full bg-muted px-3 py-1">
                   🕒 {job.job_type}
+                </span>
+                <span className="rounded-full border border-blue-200 bg-blue-50/50 text-blue-700 dark:border-blue-900 dark:bg-blue-900/20 dark:text-blue-300 px-3 py-1 font-medium">
+                  🌐 Via {job.portal}
                 </span>
               </div>
 
@@ -129,7 +125,7 @@ export default function JobsPage() {
                 <Button
                   size="sm"
                   className="whitespace-nowrap"
-                  onClick={() => alert(`Applied to ${job.title}`)}
+                  onClick={() => handleApply(job)}
                 >
                   Apply now
                 </Button>

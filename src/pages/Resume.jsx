@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function Resume() {
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+      setSuccess(false);
+    }
+  };
+
   const handleUpload = (e) => {
     e.preventDefault();
-    alert("Resume uploaded!");
+    if (!file) return;
+
+    setUploading(true);
+    setSuccess(false);
+
+    // Simulate an upload delay
+    setTimeout(() => {
+      window.localStorage.setItem("uploadedResume", file.name);
+      setUploading(false);
+      setSuccess(true);
+      setFile(null); // Clear the file after successful upload
+    }, 1500);
   };
 
   return (
@@ -21,7 +43,7 @@ export default function Resume() {
 
       <form
         onSubmit={handleUpload}
-        className="space-y-5 rounded-2xl border border-dashed border-border bg-card/60 p-6 text-center shadow-sm"
+        className="space-y-5 rounded-2xl border border-dashed border-border bg-card/60 p-6 text-center shadow-sm relative overflow-hidden"
       >
         <div className="space-y-3">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-muted">
@@ -44,12 +66,26 @@ export default function Resume() {
           >
             Choose file
           </label>
-          <input id="resume" type="file" className="hidden" />
-          <span>No file selected</span>
+          <input 
+            id="resume" 
+            type="file" 
+            className="hidden" 
+            accept=".pdf,.doc,.docx"
+            onChange={handleFileChange} 
+          />
+          <span className={file ? "text-primary font-medium" : ""}>
+            {file ? file.name : "No file selected"}
+          </span>
         </div>
 
-        <Button type="submit" className="w-full">
-          Upload resume
+        {success && (
+          <div className="p-2 text-sm font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 rounded-md">
+            Resume uploaded successfully!
+          </div>
+        )}
+
+        <Button type="submit" className="w-full" disabled={!file || uploading}>
+          {uploading ? "Uploading..." : "Upload resume"}
         </Button>
       </form>
 
